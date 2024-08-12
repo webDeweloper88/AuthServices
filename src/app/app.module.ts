@@ -4,6 +4,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from '@config/configuration';
+import { UserModule } from '@user/user.module';
+import { User } from '@user/models/User.model';
+import { UserCredentials } from '@user/models/user-credentials.model';
+import { OAuthProfile } from '@user/models/oauth-profile.model';
 
 @Module({
   imports: [
@@ -24,10 +28,13 @@ import configuration from '@config/configuration';
           database: configService.get<string>('db_name'),
           autoLoadModels: true,
           synchronize: true,
+          logging: console.log, // Включение логирования
+          models:[User, UserCredentials, OAuthProfile]
         }
        
       },
     }),
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
