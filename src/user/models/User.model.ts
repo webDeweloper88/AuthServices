@@ -1,5 +1,12 @@
 // src/user/models/user.model.ts
-import { Column, DataType, HasOne, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasOne,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { UserCredentials } from './user-credentials.model';
 import { OAuthProfile } from './oauth-profile.model';
 

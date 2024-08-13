@@ -8,6 +8,7 @@ import { UserModule } from '@user/user.module';
 import { User } from '@user/models/User.model';
 import { UserCredentials } from '@user/models/user-credentials.model';
 import { OAuthProfile } from '@user/models/oauth-profile.model';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { OAuthProfile } from '@user/models/oauth-profile.model';
        
       },
     }),
-    UserModule
+    UserModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

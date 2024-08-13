@@ -1,5 +1,12 @@
 // src/user/models/user-credentials.model.ts
-import { Column, DataType, ForeignKey, Model, Table, BelongsTo } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { User } from './user.model';
 
 @Table({
@@ -23,12 +30,6 @@ export class UserCredentials extends Model<UserCredentials> {
     type: DataType.STRING,
     allowNull: true,
   })
-  emailVerificationToken?: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
   passwordResetToken?: string;
 
   @Column({
@@ -36,6 +37,18 @@ export class UserCredentials extends Model<UserCredentials> {
     allowNull: true,
   })
   passwordResetExpires?: Date;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  emailConfirmationToken?: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  emailTokenExpiresAt: Date;
 
   @BelongsTo(() => User)
   user: User;
