@@ -45,7 +45,7 @@ export class UserCredentials extends Model<UserCredentials> {
   emailConfirmationToken?: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.DATE,
     allowNull: true,
   })
   emailTokenExpiresAt: Date;

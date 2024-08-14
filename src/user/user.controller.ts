@@ -37,7 +37,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Пользователь найден', type: User })
   @ApiResponse({ status: 404, description: 'Пользователь не найден' })
   async findOne(@Param('id') id: string): Promise<User> {
-    return this.userService.findOne(id);
+    return this.userService.findOneById(id);
   }
 
   // 3. Создание нового пользователя

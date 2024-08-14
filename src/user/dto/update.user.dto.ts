@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsEnum, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsEnum,
+  IsString,
+  IsBoolean,
+} from 'class-validator';
 import { Role } from '../models/user.model';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -30,4 +36,13 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(Role, { message: 'Роль должна быть либо "user", либо "admin"' })
   readonly role?: Role;
+
+  @ApiProperty({
+    example: true,
+    description: 'Подтвержден ли email пользователя',
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'isEmailConfirmed должен быть булевым значением' })
+  readonly isEmailConfirmed?: boolean;
 }

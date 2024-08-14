@@ -6,3 +6,4 @@ export * from './confirm-email.dto';
 export * from './resend-email-confirmation.dto';
 export * from './request-password-reset.dto';
 export * from './reset-password.dto';
+export * from './register-response.dto';

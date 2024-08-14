@@ -42,7 +42,7 @@ export class UserService {
     return await this.userModel.findAll();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOneById(id: string): Promise<User> {
     const user = await this.userModel.findByPk(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -77,6 +77,7 @@ export class UserService {
     // Обновляем только те поля, которые переданы в DTO
     if (dto.email) user.email = dto.email;
     if (dto.username) user.username = dto.username;
+    if (dto.isEmailConfirmed) user.isEmailConfirmed = dto.isEmailConfirmed;
 
     await user.save();
 
@@ -94,8 +95,9 @@ export class UserService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({
+    return this.userModel.findOne({
       where: { email },
+      include: [{ model: UserCredentials, as: 'credentials' }], // Загрузка связанных данных
     });
   }
 
@@ -152,21 +154,27 @@ export class UserService {
   async deleteEmailConfirmationToken(
     dto: DeleteEmailConfirmationTokenDto,
   ): Promise<void> {
-    await this.userCredentialsModel.destroy({
-      where: { emailConfirmationToken: dto.emailConfirmationToken },
-    });
+    await this.userCredentialsModel.update(
+      { emailConfirmationToken: null, emailTokenExpiresAt: null }, // Удаляем только токен и дату его истечения
+      { where: { emailConfirmationToken: dto.emailConfirmationToken } },
+    );
   }
 
   //Метод для сохранения токена сброса пароля
-  async savePasswordResetToken(
-    dto: SavePasswordResetTokenDto,
-  ): Promise<UserCredentials> {
+  async savePasswordResetToken(dto: SavePasswordResetTokenDto): Promise<void> {
     const userCredentials = await this.userCredentialsModel.findOne({
-      where: {
-        userId: dto.userId,
-      },
+      where: { userId: dto.userId },
     });
-    return await this.userCredentialsModel.create(dto);
+
+    if (!userCredentials) {
+      throw new NotFoundException('Учетные данные пользователя не найдены');
+    }
+
+    // Обновляем только токен и время его истечения, не трогая поле password
+    await userCredentials.update({
+      passwordResetToken: dto.passwordResetToken,
+      passwordResetExpires: dto.passwordResetExpires,
+    });
   }
 
   //Метод для поиска токена сброса пароля
@@ -182,9 +190,27 @@ export class UserService {
   async deletePasswordResetToken(
     dto: DeletePasswordResetTokenDto,
   ): Promise<void> {
-    await this.userCredentialsModel.destroy({
-      where: { passwordResetToken: dto.passwordResetToken },
+    await this.userCredentialsModel.update(
+      { passwordResetToken: null, passwordResetExpires: null }, // Обнуляем только эти поля
+      { where: { passwordResetToken: dto.passwordResetToken } },
+    );
+  }
+
+  //Метод updateUserCredentials будет принимать идентификатор пользователя и объект с обновляемыми данными, после чего обновлять соответствующую запись в базе данных.
+  async updateUserCredentials(
+    userId: string,
+    updateData: Partial<UserCredentials>,
+  ): Promise<void> {
+    const userCredentials = await this.userCredentialsModel.findOne({
+      where: { userId },
     });
+
+    if (!userCredentials) {
+      throw new NotFoundException('Учетные данные пользователя не найдены');
+    }
+
+    // Обновляем только переданные данные
+    await userCredentials.update(updateData);
   }
 
   //Метод для добавления OAuth-профиля

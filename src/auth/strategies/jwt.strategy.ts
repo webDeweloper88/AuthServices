@@ -6,11 +6,11 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/models/user.model';
 
- interface JwtPayload {
-    username: string;
-    sub: string; // Это будет userId
-    role: string;
-  }
+interface JwtPayload {
+  username: string;
+  sub: string; // Это будет userId
+  role: string;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User> {
-    const user = await this.userService.findOne(payload.sub);
+    const user = await this.userService.findOneById(payload.sub);
     if (!user) {
       throw new UnauthorizedException();
     }
